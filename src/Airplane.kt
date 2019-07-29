@@ -5,7 +5,7 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 
 
-class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double) {
+class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double, velocity: Int = 430) {
 
     val img = sprite
     var orientedImg: BufferedImage = img
@@ -16,7 +16,7 @@ class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double) {
     var y = y.toDouble()
         private set
 
-    var velocity = 430//430
+    var velocity = velocity
         private set
     var verticalSpeed = 0
         private set

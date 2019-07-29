@@ -8,22 +8,47 @@ import kotlin.random.Random
 
 class Simulation: ActionListener {
 
+    companion object {
+        private fun readSprite(filename: String)
+                = ImageIO.read(File(filename)) ?: throw RuntimeException("Missing resource '$filename'")
+    }
+
     private val sprites = arrayOf(
-        ImageIO.read(File("resources/a380.png")) ?: throw RuntimeException("Missing resource 'resources/a380.png'"),
-        ImageIO.read(File("resources/a350.png")) ?: throw RuntimeException("Missing resource 'resources/a350.png'")
+        readSprite("resources/a220.png"),
+        readSprite("resources/a320.png"),
+        readSprite("resources/a330.png"),
+        readSprite("resources/a340.png"),
+        readSprite("resources/a350.png"),
+        readSprite("resources/a380.png"),
+
+        readSprite("resources/avrorj.png"),
+
+        readSprite("resources/b707.png"),
+        readSprite("resources/b737.png"),
+        readSprite("resources/b747.png"),
+        readSprite("resources/b757.png"),
+        readSprite("resources/b777.png"),
+        readSprite("resources/b787.png"),
+
+        readSprite("resources/c172.png"),
+        readSprite("resources/citation.png"),
+
+        readSprite("resources/dash8.png"),
+
+        readSprite("resources/md80.png")
     )
 
     private val aircraft = mutableListOf<Airplane>()
 
-    private val runways = listOf(
-        Runway(100, 50, 450, 25, 16),
-        Runway(175, 75, 350, 25, 16)
+    private val runways = listOf<Runway>(
+        //Runway(100, 50, 450, 25, 16),
+        //Runway(175, 75, 350, 25, 16)
     )
 
     private val panel = Panel(aircraft, runways)
     private val win = Window(panel, 1200, 800)
     private val timer = Timer(15, this)
-    private val chance = 30
+    private val chance = 4
 
     private fun randAircraft(): Airplane {
         val sprite = sprites.random()
@@ -60,7 +85,9 @@ class Simulation: ActionListener {
         val roughHeading = Random.nextInt(hBounds.first * 10, hBounds.second * 10)
         val heading = (roughHeading % 3600) / 10.0
 
-        return Airplane(sprite, x, y, heading)
+        val velocity = Random.nextInt(200, 450)
+
+        return Airplane(sprite, x, y, heading, velocity)
 
     }
 
