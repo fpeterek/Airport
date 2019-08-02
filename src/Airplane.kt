@@ -5,10 +5,13 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 
 
-class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double, velocity: Int = 430) {
+class Airplane(sprites: Pair<BufferedImage, BufferedImage>, x: Int, y: Int, heading: Double, velocity: Int = 430) {
 
-    val img = sprite
-    var orientedImg: BufferedImage = img
+    private val yellowImg = sprites.first
+    private val redImg = sprites.second
+    private var orientedRed = redImg
+    private var orientedYellow = yellowImg
+    var img: BufferedImage = orientedYellow
         private set
 
     var x = x.toDouble()
@@ -38,19 +41,29 @@ class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double, velocity:
     val vStall = 100
     val vLanding = 120
 
-    private fun rotateImg() {
+    var selected = false
+        private set
 
-        val locationX = img.getWidth(null) / 2.0
-        val locationY = img.getHeight(null) / 2.0
+    private fun rotateImg(image: BufferedImage): BufferedImage {
+
+        val locationX = image.getWidth(null) / 2.0
+        val locationY = image.getHeight(null) / 2.0
         // + Math.PI because Graphics uses a different origin
         val tx = AffineTransform.getRotateInstance(headingRad + Math.PI / 2, locationX, locationY)
         val op = AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR)
-        orientedImg = op.filter(img, null)
+        return op.filter(image, null)
 
     }
 
+    private fun rotateImages() {
+        orientedRed = rotateImg(orientedRed)
+        orientedYellow = rotateImg(orientedYellow)
+        img = if (selected) orientedRed else orientedYellow
+    }
+
     private fun rotateAircraft(desiredHeading: Double) {
-        rotateImg()
+        heading = desiredHeading
+        rotateImages()
     }
 
     fun update() {
@@ -58,8 +71,22 @@ class Airplane(sprite: BufferedImage, x: Int, y: Int, heading: Double, velocity:
         y += sin(headingRad) * (velocity / 350.0)
     }
 
+    fun pointIntersects(x: Int, y: Int)
+            = this.x <= x && x <= this.x + this.img.width &&
+              this.y <= y && y <= this.y + this.img.height
+
+    fun onSelect() {
+        selected = true
+        img = orientedRed
+    }
+
+    fun onDeselect() {
+        selected = false
+        img = orientedYellow
+    }
+
     init {
-        rotateImg()
+        rotateImages()
     }
 
 }

@@ -1,12 +1,14 @@
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import java.io.File
 import java.lang.RuntimeException
 import javax.imageio.ImageIO
 import javax.swing.Timer
 import kotlin.random.Random
 
-class Simulation: ActionListener {
+class Simulation: ActionListener, MouseListener {
 
     companion object {
         private fun readSprite(filename: String)
@@ -14,31 +16,33 @@ class Simulation: ActionListener {
     }
 
     private val sprites = arrayOf(
-        readSprite("resources/a220.png"),
-        readSprite("resources/a320.png"),
-        readSprite("resources/a330.png"),
-        readSprite("resources/a340.png"),
-        readSprite("resources/a350.png"),
-        readSprite("resources/a380.png"),
+        Pair(readSprite("resources/a220.png"), readSprite("resources/a220_red.png")),
+        Pair(readSprite("resources/a320.png"), readSprite("resources/a320_red.png")),
+        Pair(readSprite("resources/a330.png"), readSprite("resources/a330_red.png")),
+        Pair(readSprite("resources/a340.png"), readSprite("resources/a340_red.png")),
+        Pair(readSprite("resources/a350.png"), readSprite("resources/a350_red.png")),
+        Pair(readSprite("resources/a380.png"), readSprite("resources/a380_red.png")),
 
-        readSprite("resources/avrorj.png"),
+        Pair(readSprite("resources/avrorj.png"), readSprite("resources/avrorj_red.png")),
 
-        readSprite("resources/b707.png"),
-        readSprite("resources/b737.png"),
-        readSprite("resources/b747.png"),
-        readSprite("resources/b757.png"),
-        readSprite("resources/b777.png"),
-        readSprite("resources/b787.png"),
+        Pair(readSprite("resources/b707.png"), readSprite("resources/b707_red.png")),
+        Pair(readSprite("resources/b737.png"), readSprite("resources/b737_red.png")),
+        Pair(readSprite("resources/b747.png"), readSprite("resources/b747_red.png")),
+        Pair(readSprite("resources/b757.png"), readSprite("resources/b757_red.png")),
+        Pair(readSprite("resources/b777.png"), readSprite("resources/b777_red.png")),
+        Pair(readSprite("resources/b787.png"), readSprite("resources/b787_red.png")),
 
-        readSprite("resources/c172.png"),
-        readSprite("resources/citation.png"),
+        Pair(readSprite("resources/c172.png"), readSprite("resources/c172_red.png")),
+        Pair(readSprite("resources/citation.png"), readSprite("resources/citation_red.png")),
 
-        readSprite("resources/dash8.png"),
+        Pair(readSprite("resources/dash8.png"), readSprite("resources/dash8_red.png")),
 
-        readSprite("resources/md80.png")
+        Pair(readSprite("resources/md80.png"), readSprite("resources/md80_red.png"))
     )
 
     private val aircraft = mutableListOf<Airplane>()
+
+    private var selected: Airplane? = null
 
     private val runways = listOf<Runway>(
         //Runway(100, 50, 450, 25, 16),
@@ -105,16 +109,60 @@ class Simulation: ActionListener {
         removeDistantAircraft()
     }
 
+    private fun selectAircraft(a: Airplane) {
+        selected?.onDeselect()
+        selected = a
+        selected?.onSelect()
+    }
+
+    private fun deselectAircraft() {
+        selected?.onDeselect()
+        selected = null
+    }
+
+    private fun selectAircraft(x: Int, y: Int) {
+
+        for (i in aircraft.indices.reversed()) {
+            val a = aircraft[i]
+            if (a.pointIntersects(x, y)) {
+                return selectAircraft(a)
+            }
+        }
+
+        deselectAircraft()
+
+    }
+
     override fun actionPerformed(e: ActionEvent?) {
         update()
         panel.repaint()
     }
+
+    override fun mouseClicked(e: MouseEvent?) {
+
+        if (e == null) {
+            return
+        }
+
+        when (e.button) {
+            MouseEvent.BUTTON1 -> selectAircraft(e.x, e.y)
+            MouseEvent.BUTTON2 -> Unit
+        }
+
+    }
+
+    // Ignored events
+    override fun mouseEntered(e: MouseEvent?) = Unit
+    override fun mouseExited(e: MouseEvent?) = Unit
+    override fun mousePressed(e: MouseEvent?) = Unit
+    override fun mouseReleased(e: MouseEvent?) = Unit
 
     private fun finalize() {
         timer.stop()
     }
 
     init {
+        panel.addMouseListener(this)
         timer.start()
     }
 
