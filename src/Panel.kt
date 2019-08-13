@@ -20,7 +20,7 @@ class Panel(private val aircraft: List<Airplane>, private val runways: List<Runw
     }
 
     private fun renderAircraft(g: Graphics) = aircraft.forEach {
-        g.drawImage(it.img, it.x.toInt(), it.y.toInt(), null)
+        g.drawImage(it.img, it.visualX, it.visualY, null)
     }
 
     private fun renderBackground(g: Graphics) = g.drawImage(img, 0, 0, null)

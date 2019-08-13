@@ -1,4 +1,6 @@
+import java.awt.Rectangle
 import java.awt.geom.AffineTransform
+import java.awt.geom.Rectangle2D
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.lang.Math.cos
@@ -18,6 +20,12 @@ class Airplane(sprites: Pair<BufferedImage, BufferedImage>, x: Int, y: Int, head
         private set
     var y = y.toDouble()
         private set
+
+    val visualX: Int
+        get() = x.toInt() - img.width / 2
+
+    val visualY: Int
+        get() = y.toInt() - img.height / 2
 
     var velocity = velocity
         private set
@@ -66,14 +74,19 @@ class Airplane(sprites: Pair<BufferedImage, BufferedImage>, x: Int, y: Int, head
         rotateImages()
     }
 
+    fun move(x: Int, y: Int) {
+        this.x = x.toDouble()
+        this.y = y.toDouble()
+    }
+
     fun update() {
         x += cos(headingRad) * (velocity / 350.0)
         y += sin(headingRad) * (velocity / 350.0)
     }
 
     fun pointIntersects(x: Int, y: Int)
-            = this.x <= x && x <= this.x + this.img.width &&
-              this.y <= y && y <= this.y + this.img.height
+            = visualX <= x && x <= visualX + this.img.width &&
+              visualY <= y && y <= visualY + this.img.height
 
     fun onSelect() {
         selected = true

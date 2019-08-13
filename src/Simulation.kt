@@ -133,6 +133,8 @@ class Simulation: ActionListener, MouseListener {
 
     }
 
+    private fun moveAircraft(x: Int, y: Int) = selected?.move(x, y)
+
     override fun actionPerformed(e: ActionEvent?) {
         update()
         panel.repaint()
@@ -146,7 +148,7 @@ class Simulation: ActionListener, MouseListener {
 
         when (e.button) {
             MouseEvent.BUTTON1 -> selectAircraft(e.x, e.y)
-            MouseEvent.BUTTON2 -> Unit
+            MouseEvent.BUTTON2 -> moveAircraft(e.x, e.y)
         }
 
     }
